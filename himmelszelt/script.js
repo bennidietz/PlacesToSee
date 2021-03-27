@@ -79,11 +79,11 @@ $.ajax({
             }
             if (place.latLng !== null) {
                 if (place.category == "Stadt") {
-                    L.marker(place.latlng.asArray(), {icon: getIcon(essen_icon_url, large_icon_size)}).addTo(stadt_layer.addTo(mymap)).bindPopup(html);   
+                    L.marker(place.latlng.asArray(), {icon: getIcon(city_icon_url, large_icon_size)}).addTo(stadt_layer.addTo(mymap)).bindPopup(html);   
                 } else if (place.category == "Freizeit") {
                     L.marker(place.latlng.asArray(), {icon: getIcon(leisure_icon_url, 50)}).addTo(freizeit_layer.addTo(mymap)).bindPopup(html);   
                 } else if (place.category == "Essen") {
-                    L.marker(place.latlng.asArray(), {icon: getIcon(city_icon_url, large_icon_size)}).addTo(essen_layer.addTo(mymap)).bindPopup(html);   
+                    L.marker(place.latlng.asArray(), {icon: getIcon(essen_icon_url, large_icon_size)}).addTo(essen_layer.addTo(mymap)).bindPopup(html);   
                 }
             }
         }
