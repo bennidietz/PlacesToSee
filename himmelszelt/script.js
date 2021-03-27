@@ -4,6 +4,7 @@ var places = null
 var essen_icon_url = "https://harners-wirtshaus.de/wp-content/uploads/2015/01/Essen-Icon-01.png"
 var leisure_icon_url = "leisure_icon.png"
 var city_icon_url = "https://img.icons8.com/bubbles/2x/city.png"
+var you_are_here_url = "https://i.pinimg.com/originals/e9/85/b8/e985b822d867f21b3fd20ae7a81f6760.png"
 var small_icon_size = 35
 var large_icon_size = 65
 
@@ -118,6 +119,24 @@ var basemap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{
     id: 'mapbox/streets-v11',
     accessToken: 'pk.eyJ1IjoiYmVubmlkaWV0ejE5OTciLCJhIjoiY2p2YjQxOXVmMTR1YTQzcGs4am55anFsZSJ9.AMVgZjCNNILvwXnLS3DbyA'
 }).addTo(mymap);
+
+mymap.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
+        .on('locationfound', function(e){
+            var marker = L.marker([e.latitude, e.longitude], {icon: getIcon(you_are_here_url, large_icon_size)} );
+            var circle = L.circle([e.latitude, e.longitude], e.accuracy/2, {
+                weight: 1,
+                color: 'blue',
+                fillColor: '#cacaca',
+                fillOpacity: 0.2
+            });
+            mymap.addLayer(marker).openPopup();
+            mymap.addLayer(circle);
+            mymap.panTo(new L.LatLng(e.latitude, e.longitude));
+        })
+       .on('locationerror', function(e){
+            console.log(e);
+            alert("Location access denied.");
+        });
 
 // mymap.on('zoomend', function() {
 //     var currentZoom = mymap.getZoom();
