@@ -1,5 +1,11 @@
-var url = "https://spreadsheets.google.com/feeds/cells/1Nc36on2CHcVC3nxxgXdlL4PrRnxCCRECXFHkHoxs8Vs/od6/public/basic?alt=json";
+var url = "https://spreadsheets.google.com/feeds/cells/1oe7koTNUzTmhl9Z_133RRdQo-W01K9X9BxMvCFZydVw/od6/public/basic?alt=json";
 var places = null
+
+var essen_icon_url = "https://harners-wirtshaus.de/wp-content/uploads/2015/01/Essen-Icon-01.png"
+var leisure_icon_url = "leisure_icon.png"
+var city_icon_url = "https://img.icons8.com/bubbles/2x/city.png"
+var small_icon_size = 35
+var large_icon_size = 65
 
 class LatLng {
     constructor(lat, lng) {
@@ -13,7 +19,7 @@ class LatLng {
 }
 
 class PlaceToSee {
-    constructor(category, name, latlng, description, imageUrl,webseite) {
+    constructor(category, name, latlng, description, imageUrl, webseite) {
         this.category = category;
         this.name = name;
         this.latlng = latlng;
@@ -27,54 +33,100 @@ function retrievePlacesToSee(json) {
     array = json.feed.entry
     places = []
     for (var i=6; i + 5 <= array.length; i+= 6) {
-        latLng = array[i+2].content.$t.split(",")
-        lat = Number(latLng[0].trim())
-        lng = Number(latLng[1].trim())
+        console.log(array)
+        if (array[i+2] !== null) {
+            latLng = array[i+2].content.$t.split(",")
+            if (latLng[0] !== null && latLng[1] != null) {
+                lat = Number(latLng[0].trim())
+                lng = Number(latLng[1].trim())
+            }
+        }
         places.push(
             new PlaceToSee(
                 array[i].content.$t,
                 array[i+1].content.$t,
-                new LatLng(lat, lng),
-                array[i+3].content.$t,
-                array[i+4].content.$t,
-                array[i+5].content.$t)
+                (lng!==null) ? new LatLng(lat, lng) : null,
+                (array[i+3] != null) ?array[i+3].content.$t : null,
+                (array[i+4] != null) ? array[i+4].content.$t : null,
+                (array[i+5] != null) ? array[i+5].content.$t : null)
         )
     }
     return places
 }
 
+var overlayMaps = {}
+
 $.ajax({
     url:url,
     dataType:"jsonp",
     success:function(data) {
-        var mensa_marker = L.layerGroup();
+        var freizeit_layer = L.layerGroup();
+        var stadt_layer = L.layerGroup();
+        var essen_layer = L.layerGroup();
+        
         places = retrievePlacesToSee(data)
         for (i in places) {
             place = places[i]
-            html = "<h5>" + place.name + ":</h5><img width='300px' src='" + place.imageUrl + "'><br>"
+            html = "<h5>" + place.name + ":</h5>"
+            if (place.imageUrl != null) {
+                html += "<img width='300px' src='" + place.imageUrl + "'></img>"
+            }
             if (place.description != null && place.description.length > 2) {
-                html += place.description + "<br>"
+                html += "<br>" + place.description + "<br>"
             }
             if (place.webseite != null && place.webseite.length >  5) {
                 html += "<a href='" + place.webseite + "'>Erkunden...</a>"
             }
-            console.log(html)
-            L.marker(place.latlng.asArray()).addTo(mensa_marker.addTo(mymap)).bindPopup(html);
+            if (place.latLng !== null) {
+                if (place.category == "Stadt") {
+                    L.marker(place.latlng.asArray(), {icon: getIcon(essen_icon_url, large_icon_size)}).addTo(stadt_layer.addTo(mymap)).bindPopup(html);   
+                } else if (place.category == "Freizeit") {
+                    L.marker(place.latlng.asArray(), {icon: getIcon(leisure_icon_url, 50)}).addTo(freizeit_layer.addTo(mymap)).bindPopup(html);   
+                } else if (place.category == "Essen") {
+                    L.marker(place.latlng.asArray(), {icon: getIcon(city_icon_url, large_icon_size)}).addTo(essen_layer.addTo(mymap)).bindPopup(html);   
+                }
+            }
         }
-        // var overlayMaps = {
-        //     "Mensa": mensa_marker
-        // };
-        // L.control.layers(overlayMaps).addTo(mymap);
+        var baseLayers = {
+
+        };
+        overlayMaps = {
+            "Essen": essen_layer,
+            "Freizeit": freizeit_layer,
+            "Stadt": stadt_layer
+        };
+        L.control.layers(baseLayers, overlayMaps).addTo(mymap);
     },
 });
+
+function getIcon(url, size) {
+    return new L.icon({
+        iconUrl: url,
+        iconSize:  [size, size]
+    })
+}
+
+
 
 var mymap = L.map('mapid', { 
     zoomControl: false,
     fullscreenControl: true
-}).setView([51.96, 7.59], 4);
+}).setView([54.05128792423013, 10.749693008609134], 14);
 var basemap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
     id: 'mapbox/streets-v11',
     accessToken: 'pk.eyJ1IjoiYmVubmlkaWV0ejE5OTciLCJhIjoiY2p2YjQxOXVmMTR1YTQzcGs4am55anFsZSJ9.AMVgZjCNNILvwXnLS3DbyA'
 }).addTo(mymap);
+
+// mymap.on('zoomend', function() {
+//     var currentZoom = mymap.getZoom();
+//     if (currentZoom < 11) {
+//         overlayMaps.eachLayer(function(layer) {
+//             //if (layer.feature.properties.num < 0.5)
+//             return layer.setIcon(getIcon(essen_icon_url, small_icon_size));
+//             //else if (feature.properties.num < 1.0)
+//               //  return layer.setIcon(ar_icon_2_double_size);
+//         });
+//     }
+// });
