@@ -4,6 +4,8 @@ var places = null
 var essen_icon_url = "https://harners-wirtshaus.de/wp-content/uploads/2015/01/Essen-Icon-01.png"
 var leisure_icon_url = "leisure_icon.png"
 var city_icon_url = "https://img.icons8.com/bubbles/2x/city.png"
+var shopping_icon_url = "https://cdn1.iconfinder.com/data/icons/shopping-flat-4/512/shopping__business__shop__store_-512.png"
+
 var you_are_here_url = "https://i.pinimg.com/originals/e9/85/b8/e985b822d867f21b3fd20ae7a81f6760.png"
 var small_icon_size = 35
 var large_icon_size = 65
@@ -64,6 +66,7 @@ $.ajax({
         var freizeit_layer = L.layerGroup();
         var stadt_layer = L.layerGroup();
         var essen_layer = L.layerGroup();
+        var shopping_layer = L.layerGroup();
         
         places = retrievePlacesToSee(data)
         for (i in places) {
@@ -85,6 +88,8 @@ $.ajax({
                     L.marker(place.latlng.asArray(), {icon: getIcon(leisure_icon_url, 50)}).addTo(freizeit_layer.addTo(mymap)).bindPopup(html);   
                 } else if (place.category == "Essen") {
                     L.marker(place.latlng.asArray(), {icon: getIcon(essen_icon_url, large_icon_size)}).addTo(essen_layer.addTo(mymap)).bindPopup(html);   
+                } else if (place.category == "Shopping") {
+                    L.marker(place.latlng.asArray(), {icon: getIcon(shopping_icon_url, large_icon_size)}).addTo(shopping_layer.addTo(mymap)).bindPopup(html);   
                 }
             }
         }
@@ -94,7 +99,8 @@ $.ajax({
         overlayMaps = {
             "Essen": essen_layer,
             "Freizeit": freizeit_layer,
-            "Stadt": stadt_layer
+            "Stadt": stadt_layer,
+            "Shopping": shopping_layer
         };
         L.control.layers(baseLayers, overlayMaps).addTo(mymap);
     },
