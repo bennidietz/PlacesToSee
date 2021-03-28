@@ -145,7 +145,7 @@ function getIcon(url, size) {
 var mymap = L.map('mapid', { 
     zoomControl: false,
     fullscreenControl: true
-}).setView([54.05128792423013, 10.749693008609134], 14);
+}).setView([54.05128792423013, 10.749693008609134], 13);
 var basemap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
@@ -153,23 +153,23 @@ var basemap = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{
     accessToken: 'pk.eyJ1IjoiYmVubmlkaWV0ejE5OTciLCJhIjoiY2p2YjQxOXVmMTR1YTQzcGs4am55anFsZSJ9.AMVgZjCNNILvwXnLS3DbyA'
 }).addTo(mymap);
 
-mymap.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
-        .on('locationfound', function(e){
-            var marker = L.marker([e.latitude, e.longitude], {icon: getIcon(you_are_here_url, large_icon_size)} );
-            var circle = L.circle([e.latitude, e.longitude], e.accuracy/2, {
-                weight: 1,
-                color: 'blue',
-                fillColor: '#cacaca',
-                fillOpacity: 0.2
-            });
-            mymap.addLayer(marker).openPopup();
-            mymap.addLayer(circle);
-            mymap.panTo(new L.LatLng(e.latitude, e.longitude));
-        })
-       .on('locationerror', function(e){
-            console.log(e);
-            alert("Location access denied.");
-        });
+// mymap.locate({setView: true, watch: true}) /* This will return map so you can do chaining */
+//         .on('locationfound', function(e){
+//             var marker = L.marker([e.latitude, e.longitude], {icon: getIcon(you_are_here_url, large_icon_size)} );
+//             var circle = L.circle([e.latitude, e.longitude], e.accuracy/2, {
+//                 weight: 1,
+//                 color: 'blue',
+//                 fillColor: '#cacaca',
+//                 fillOpacity: 0.2
+//             });
+//             mymap.addLayer(marker).openPopup();
+//             mymap.addLayer(circle);
+//             mymap.panTo(new L.LatLng(e.latitude, e.longitude));
+//         })
+//        .on('locationerror', function(e){
+//             console.log(e);
+//             alert("Location access denied.");
+//         });
 
 // mymap.on('zoomend', function() {
 //     var currentZoom = mymap.getZoom();
