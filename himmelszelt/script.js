@@ -4,34 +4,38 @@ var places = null
 var you_are_here_url = "you-are-here.png"
 
 var small_icon_size = 35
-var large_icon_size = 65
+var large_icon_size = 50
 
 class Category {
-    constructor(name_in_table, name_to_display, icon_path) {
+    constructor(name_in_table, name_to_display, icon_path, iconSize = large_icon_size) {
         this.name_in_table = name_in_table;
         this.name_to_display = name_to_display;
         this.icon_path = icon_path;
         this.layerGroup = L.layerGroup();
+        this.iconSize = iconSize;
     }
     
     addPlace(place, html) {
-        L.marker(place.latlng.asArray(), {icon: getIcon(this.icon_path, 50)}).addTo(this.layerGroup.addTo(mymap)).bindPopup(html);   
+        L.marker(place.latlng.asArray(), {icon: getIcon(this.icon_path, this.iconSize)}).addTo(this.layerGroup.addTo(mymap)).bindPopup(html);   
     }
 }
 
 var categories = []
 
 categories.push(
-    new Category("Stadt", "Stadt", "city.png")
+    new Category("Stadt", "Stadt", "city.png", 60)
 )
 categories.push(
     new Category("Freizeit", "Freizeit", "leisure_icon.png")
 )
 categories.push(
-    new Category("Shopping", "Shopping", "shopping.png")
+    new Category("Shopping/Einkaufen", "Shopping", "shopping.png")
 )
 categories.push(
     new Category("Essen", "Essen", "essen.png")
+)
+categories.push(
+    new Category("Gesundheit", "Gesundheit", "gesundheit.png")
 )
 
 class LatLng {
@@ -104,8 +108,8 @@ $.ajax({
         places = retrievePlacesToSee(data)
         for (i in places) {
             place = places[i]
-            html = "<h5>" + place.name + ":</h5>"
-            if (place.imageUrl != null) {
+            html = "<h5>" + place.name + "</h5>"
+            if (place.imageUrl != null && place.imageUrl.length > 2) {
                 html += "<img width='300px' src='" + place.imageUrl + "'></img>"
             }
             if (place.description != null && place.description.length > 2) {
