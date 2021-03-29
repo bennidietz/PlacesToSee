@@ -27,11 +27,15 @@ class Category {
 var categories = []
 
 categories.push(
-    new Category("Stadt", "Stadt", "city.png", 60)
+    new Category("Stadt", "Stadt", "city.png")
 )
 
 categories.push(
-    new Category("Natur", "Natur", "berge.png", 60)
+    new Category("Natur", "Natur", "berge.png")
+)
+
+categories.push(
+    new Category("Tagestrip", "Tagestrip", "bike.png", 20)
 )
 
 class LatLng {
