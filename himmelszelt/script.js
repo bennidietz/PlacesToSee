@@ -6,6 +6,10 @@ var you_are_here_url = "you-are-here.png"
 var small_icon_size = 35
 var large_icon_size = 50
 
+var searchParams = new URLSearchParams(window.location.search)
+
+var selectedPlaceIndex = parseInt(searchParams.get("place"))-2
+
 class Category {
     constructor(name_in_table, name_to_display, icon_path, iconSize = large_icon_size) {
         this.name_in_table = name_in_table;
@@ -15,8 +19,11 @@ class Category {
         this.iconSize = iconSize;
     }
     
-    addPlace(place, html) {
-        L.marker(place.latlng.asArray(), {icon: getIcon(this.icon_path, this.iconSize)}).addTo(this.layerGroup.addTo(mymap)).bindPopup(html);   
+    addPlace(place, html, showPopup = false) {
+        var m = L.marker(place.latlng.asArray(), {icon: getIcon(this.icon_path, this.iconSize)}).addTo(this.layerGroup.addTo(mymap)).bindPopup(html);
+        if (showPopup) {
+            m.openPopup()
+        }
     }
 }
 
@@ -120,7 +127,11 @@ $.ajax({
             }
             if (place.latLng !== null) {
                 if (place.category != null) {
-                    place.category.addPlace(place, html)
+                    place.category.addPlace(place, html, i == selectedPlaceIndex)
+                    if (i == selectedPlaceIndex) {
+                        mymap.setView([place.latlng.lat, place.latlng.lng], 14)
+                        document.title = place.name
+                    }
                 }
             }
         }
