@@ -113,6 +113,7 @@ $.ajax({
                     place.category.addPlace(place, html, i == selectedPlaceIndex)
                     if (i == selectedPlaceIndex) {
                         mymap.setView([place.latlng.lat, place.latlng.lng], 14)
+                        document.title = place.name
                     }
                 }
             }
